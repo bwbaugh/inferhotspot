@@ -1,0 +1,11 @@
+# Python
+*.py[co]
+
+# Packages
+*.egg-info/
+build/
+dist/
+
+# Unit test / coverage reports
+.coverage
+cover/

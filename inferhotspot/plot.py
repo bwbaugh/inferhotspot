@@ -122,6 +122,30 @@ def make_map(longitude, latitude, time, box, place):
     return figure
 
 
+def make_time(time):
+    """Plot a histogram of time of day values.
+
+    Args:
+        time: List of time of day float values length *N*.
+
+    Returns:
+        Figure object used for the histogram.
+    """
+    figure = plt.figure('time')
+    figure.set_dpi(100)
+
+    ax = figure.add_subplot(1, 1, 1)
+    ax.set_title('Created-at Times of Tweets')
+    ax.set_xlabel('Hour (UTC)')
+    ax.set_ylabel('Number of Tweets')
+    ax.set_xlim(0, 24)
+    ax.grid(True)
+
+    n, bins, patches = ax.hist(time, bins=range(25))
+
+    return figure
+
+
 def make_plots(tweets, box, place):
     """Make plots from the extracted tweet data.
 
@@ -137,6 +161,7 @@ def make_plots(tweets, box, place):
     time = [(x.hour + (x.minute / 60)) for x in time]
 
     map_figure = make_map(longitude, latitude, time, box, place)
+    time_histogram = make_time(time)
 
     plt.show()
 

@@ -7,6 +7,7 @@ import json
 import os
 
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 from matplotlib.patches import Rectangle
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -191,6 +192,7 @@ def make_heatmap(longitude, latitude, box, place):
     heatmap = ax.hexbin(x=longitude,
                         y=latitude,
                         mincnt=1,
+                        norm=LogNorm(),
                         cmap=plt.cm.rainbow)
 
     colorbar = create_colorbar(ax, heatmap, cmap=plt.cm.rainbow)

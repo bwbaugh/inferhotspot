@@ -59,7 +59,7 @@ def extract_data(tweets):
 
 
 def make_map(longitude, latitude, time, box, place):
-    """Plot geocoded tweets on a map.
+    """Plot geocoded tweets on a scatter plot.
 
     Use matplotlib to produce a scatter plot of the longitude and
     latitude data from a collection of tweets.
@@ -122,6 +122,65 @@ def make_map(longitude, latitude, time, box, place):
     return figure
 
 
+def make_heatmap(longitude, latitude, box, place):
+    """Plot geocoded tweets on a heat map.
+
+    Use matplotlib to produce a heat map (hexagonal binning plot) of the
+    longitude and latitude data from a collection of tweets.
+
+    Args:
+        longitude: List of longitude float values of length *N*.
+        latitude: List of latitude float values of length *N*.
+        box = A pair of longitude and latitude pairs, with the southwest
+            corner of the bounding box coming first.
+        place = String for the place name of the bounding `box`.
+
+    Returns:
+        Figure object used to create the hexagonal binning plot.
+    """
+    figure = plt.figure('heatmap')
+    figure.set_size_inches(12, 9, forward=True)
+    figure.set_dpi(100)
+
+    ax = figure.add_subplot(1, 1, 1)
+    ax.set_title('Geocoded Tweets in {0}'.format(place))
+    ax.set_xlabel('Longitude')
+    ax.set_ylabel('Latitude')
+    ax.grid(True)
+
+    rect = Rectangle(xy=(box[0], box[1]),
+                     width=box[2] - box[0],
+                     height=box[3] - box[1],
+                     facecolor='none')
+    ax.add_patch(rect)
+
+    heatmap = ax.hexbin(x=longitude,
+                        y=latitude,
+                        mincnt=1,
+                        cmap=plt.cm.rainbow)
+
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad='3%')
+    colorbar = figure.colorbar(heatmap,
+                               cax=cax,
+                               cmap=plt.cm.rainbow)
+    colorbar.solids.set_edgecolor("face")
+    # Make colorbar solid.
+    # See: http://stackoverflow.com/a/4480124/1988505
+    colorbar.set_alpha(1)
+    colorbar.draw_all()
+
+    x_padding = (max(longitude) - min(longitude)) * 0.1
+    y_padding = (max(latitude) - min(latitude)) * 0.1
+    ax.set_xbound(box[0] - x_padding, box[2] + x_padding)
+    ax.set_ybound(box[1] - y_padding, box[3] + y_padding)
+    ax.set_aspect('equal')
+
+    figure.tight_layout(rect=(0.05, 0.05, 0.95, 0.95))
+
+    return figure
+
+
 def make_time(time):
     """Plot a histogram of time of day values.
 
@@ -161,6 +220,7 @@ def make_plots(tweets, box, place):
     time = [(x.hour + (x.minute / 60)) for x in time]
 
     map_figure = make_map(longitude, latitude, time, box, place)
+    heatmap_figure = make_heatmap(longitude, latitude, box, place)
     time_histogram = make_time(time)
 
     plt.show()

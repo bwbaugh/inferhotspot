@@ -105,6 +105,12 @@ def plot_map(tweets):
     colorbar.set_alpha(1)
     colorbar.draw_all()
 
+    x_padding = (max(longitude) - min(longitude)) * 0.1
+    y_padding = (max(latitude) - min(latitude)) * 0.1
+    ax.set_xbound(denton_county[0] - x_padding, denton_county[2] + x_padding)
+    ax.set_ybound(denton_county[1] - y_padding, denton_county[3] + y_padding)
+    ax.set_aspect('equal')
+
     plt.show()
 
 

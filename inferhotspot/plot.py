@@ -1,6 +1,8 @@
 # Copyright (C) 2013 Wesley Baugh
 """Visually display geocded tweets."""
+from __future__ import division
 import bz2
+import dateutil
 import json
 import os
 
@@ -35,14 +37,23 @@ def extract_data(tweets):
         tweets: An iterable containing JSON decoded tweets.
 
     Yields:
-        A tuple of the longitude and latitude coordinates extracted
-        from the tweet.
+        A tuple of the longitude and latitude coordinates, and the
+        created-at `datetime.datetime` object parsed from the tweet.
+
+        For example, if a tweet contained:
+            tweet[created_at] = 'Tue Feb 12 06:33:37 +0000 2013'
+        The datetime object yielded would be:
+            datetime.datetime(2013, 2, 12, 6, 33, 37, tzinfo=tzutc())
     """
     for tweet in tweets:
+        # Coordinates
         point = tweet['coordinates']['coordinates']
         longitude = point[0]
         latitude = point[1]
-        yield longitude, latitude
+        # Created-at time
+        created_at = tweet['created_at']
+        created_at = dateutil.parser.parse(created_at)
+        yield longitude, latitude, created_at
 
 
 def plot_map(tweets):
@@ -56,13 +67,14 @@ def plot_map(tweets):
     """
     data = list(extract_data(tweets))
     longitude, latitude, time = zip(*data)
+    time = [(x.hour + (x.minute / 60)) for x in time]
 
     figure = plt.figure('map')
     ax = figure.add_subplot(1, 1, 1)
     scatter = ax.scatter(x=longitude,
                          y=latitude,
-                         c=latitude,
-                         cmap=plt.cm.prism,
+                         c=time,
+                         cmap=plt.cm.rainbow,
                          s=10,
                          alpha=0.25)
     plt.show()

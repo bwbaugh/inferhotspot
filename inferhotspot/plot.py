@@ -54,12 +54,17 @@ def plot_map(tweets):
     Args:
         tweets: Iterable of tweets.
     """
-    points = extract_points(tweets)
+    points = list(extract_points(tweets))
     longitude, latitude = zip(*points)
 
     figure = plt.figure('map')
     ax = figure.add_subplot(1, 1, 1)
-    scatter = ax.scatter(longitude, latitude, s=10, alpha=0.25)
+    scatter = ax.scatter(x=longitude,
+                         y=latitude,
+                         c=latitude,
+                         cmap=plt.cm.prism,
+                         s=10,
+                         alpha=0.25)
     plt.show()
 
 

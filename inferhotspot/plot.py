@@ -58,6 +58,23 @@ def extract_data(tweets):
         yield longitude, latitude, created_at
 
 
+def ax_coord_bounds(ax, longitude, latitude, box):
+    """Set the x-axis and y-axis bounds based on longitude and latitude.
+
+    Args:
+        ax: Axes object to modify.
+        longitude: List of longitude float values of length *N*.
+        latitude: List of latitude float values of length *N*.
+        box = A pair of longitude and latitude pairs, with the southwest
+            corner of the bounding box coming first.
+    """
+    x_padding = (max(longitude) - min(longitude)) * 0.1
+    y_padding = (max(latitude) - min(latitude)) * 0.1
+    ax.set_xbound(box[0] - x_padding, box[2] + x_padding)
+    ax.set_ybound(box[1] - y_padding, box[3] + y_padding)
+    ax.set_aspect('equal')
+
+
 def make_map(longitude, latitude, time, box, place):
     """Plot geocoded tweets on a scatter plot.
 
@@ -111,11 +128,7 @@ def make_map(longitude, latitude, time, box, place):
     colorbar.set_alpha(1)
     colorbar.draw_all()
 
-    x_padding = (max(longitude) - min(longitude)) * 0.1
-    y_padding = (max(latitude) - min(latitude)) * 0.1
-    ax.set_xbound(box[0] - x_padding, box[2] + x_padding)
-    ax.set_ybound(box[1] - y_padding, box[3] + y_padding)
-    ax.set_aspect('equal')
+    ax_coord_bounds(ax, longitude, latitude, box)
 
     figure.tight_layout(rect=(0.05, 0.05, 0.95, 0.95))
 
@@ -170,11 +183,7 @@ def make_heatmap(longitude, latitude, box, place):
     colorbar.set_alpha(1)
     colorbar.draw_all()
 
-    x_padding = (max(longitude) - min(longitude)) * 0.1
-    y_padding = (max(latitude) - min(latitude)) * 0.1
-    ax.set_xbound(box[0] - x_padding, box[2] + x_padding)
-    ax.set_ybound(box[1] - y_padding, box[3] + y_padding)
-    ax.set_aspect('equal')
+    ax_coord_bounds(ax, longitude, latitude, box)
 
     figure.tight_layout(rect=(0.05, 0.05, 0.95, 0.95))
 

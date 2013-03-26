@@ -58,6 +58,21 @@ def extract_data(tweets):
         yield longitude, latitude, created_at
 
 
+def create_box(ax, box):
+    """Create a colorbar object.
+
+    Args:
+        ax: Axes object to modify.
+        box = A pair of longitude and latitude pairs, with the southwest
+            corner of the bounding box coming first.
+    """
+    rect = Rectangle(xy=(box[0], box[1]),
+                     width=box[2] - box[0],
+                     height=box[3] - box[1],
+                     facecolor='none')
+    ax.add_patch(rect)
+
+
 def create_colorbar(ax, mappable, cmap=None):
     """Create a colorbar object.
 
@@ -124,11 +139,7 @@ def make_map(longitude, latitude, time, box, place):
     ax.set_ylabel('Latitude')
     ax.grid(True)
 
-    rect = Rectangle(xy=(box[0], box[1]),
-                     width=box[2] - box[0],
-                     height=box[3] - box[1],
-                     facecolor='none')
-    ax.add_patch(rect)
+    create_box(ax, box)
 
     scatter = ax.scatter(x=longitude,
                          y=latitude,
@@ -175,11 +186,7 @@ def make_heatmap(longitude, latitude, box, place):
     ax.set_ylabel('Latitude')
     ax.grid(True)
 
-    rect = Rectangle(xy=(box[0], box[1]),
-                     width=box[2] - box[0],
-                     height=box[3] - box[1],
-                     facecolor='none')
-    ax.add_patch(rect)
+    create_box(ax, box)
 
     heatmap = ax.hexbin(x=longitude,
                         y=latitude,

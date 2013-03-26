@@ -71,12 +71,24 @@ def plot_map(tweets):
 
     figure = plt.figure('map')
     ax = figure.add_subplot(1, 1, 1)
+
     scatter = ax.scatter(x=longitude,
                          y=latitude,
                          c=time,
                          cmap=plt.cm.rainbow,
                          s=10,
                          alpha=0.25)
+
+    colorbar = figure.colorbar(scatter,
+                               ax=ax,
+                               cmap=plt.cm.rainbow,
+                               ticks=range(24))
+    colorbar.solids.set_edgecolor("face")
+    # Make colorbar solid.
+    # See: http://stackoverflow.com/a/4480124/1988505
+    colorbar.set_alpha(1)
+    colorbar.draw_all()
+
     plt.show()
 
 

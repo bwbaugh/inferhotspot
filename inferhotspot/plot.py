@@ -192,6 +192,7 @@ def make_heatmap(longitude, latitude, box, place):
     heatmap = ax.hexbin(x=longitude,
                         y=latitude,
                         mincnt=1,
+                        gridsize=128,
                         norm=LogNorm(),
                         cmap=plt.cm.rainbow)
 

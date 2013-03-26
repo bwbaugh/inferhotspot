@@ -3,6 +3,39 @@ inferhotspot
 
 Infer information about local hotspots.
 
+Installation
+------------
+
+You do not need to install the package in order to use it, however if
+you choose to install then use one of the options below. Otherwise your
+current working directory must be the parent of the *inferhotspot*
+package.
+
+### Using distribute
+
+#### Standard install
+
+`python setup.py install`
+
+#### Development install
+
+To install in *development* mode, which creates a symlink to the current
+directory so that the source can be modified or updated in-place, use:
+
+`python setup.py develop`
+
+And to remove the symlink:
+
+`python setup.py develop -u`
+
+### Using pip
+
+`pip install .`
+
+To uninstall:
+
+`pip uninstall inferhotspot`
+
 Usage
 -----
 

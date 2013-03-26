@@ -76,8 +76,9 @@ def plot_map(tweets):
                          y=latitude,
                          c=time,
                          cmap=plt.cm.rainbow,
-                         s=10,
-                         alpha=0.5)
+                         s=5,
+                         alpha=0.5,
+                         lw=0.5)
 
     colorbar = figure.colorbar(scatter,
                                ax=ax,

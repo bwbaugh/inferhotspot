@@ -74,6 +74,7 @@ def plot_map(tweets):
     ax.set_title('Geocoded Tweets in Denton County')
     ax.set_xlabel('Longitude')
     ax.set_ylabel('Latitude')
+    ax.grid(True)
 
     scatter = ax.scatter(x=longitude,
                          y=latitude,

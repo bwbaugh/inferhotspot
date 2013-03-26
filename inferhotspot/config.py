@@ -17,6 +17,10 @@ def create_default_config():
     """
     config = ConfigParser.SafeConfigParser()
 
+    config.add_section('plot')
+    config.set('plot', 'path', 'PATH/TO/TWEET/ARCHIVE')
+    config.set('plot', 'archive', 'tweet-loc_denton-filtered.json.bz2')
+
     return config
 
 

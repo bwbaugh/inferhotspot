@@ -17,11 +17,17 @@ def create_default_config():
     """
     config = ConfigParser.SafeConfigParser()
 
+    config.add_section('filter')
+    config.set('filter', 'process_directory', 'PATH/TO/TWEET/ARCHIVE/FILES')
+    config.set('filter', 'output', 'tweet-loc_denton-filtered.json')
+
+    config.add_section('place')
+    config.set('place', 'box', '[-97.399786, 32.989759, -96.834612, 33.413174]')
+    config.set('place', 'name', 'Denton County')
+
     config.add_section('plot')
     config.set('plot', 'path', 'PATH/TO/TWEET/ARCHIVE')
     config.set('plot', 'archive', 'tweet-loc_denton-filtered.json.bz2')
-    config.set('plot', 'box', '[-97.399786, 32.989759, -96.834612, 33.413174]')
-    config.set('plot', 'place', 'Denton County')
 
     return config
 

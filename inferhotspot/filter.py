@@ -15,6 +15,8 @@ import json
 import glob
 import os
 
+from config import get_config
+
 
 class FilterInBox(object):
     """Matches if a tweet has a geocoded point in a bounding box.
@@ -109,7 +111,10 @@ def combine_filter(directory, output, filters, msginterval=10000):
 
 
 if __name__ == '__main__':
-    # TODO(bwbaugh): Use argparse or ConfigParser to determine settings.
-    denton_county = [-97.399786, 32.989759, -96.834612, 33.413174]
-    filters = [FilterInBox(denton_county)]
-    combine_filter(directory='todo', output='filtered.json', filters=filters)
+    config = get_config()
+    path = config.get('filter', 'process_directory')
+    fname = config.get('filter', 'output')
+    box = json.loads(config.get('place', 'box'))
+
+    filters = [FilterInBox(box)]
+    combine_filter(directory=path, output=fname, filters=filters)

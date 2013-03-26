@@ -261,8 +261,8 @@ if __name__ == '__main__':
     config = get_config()
     path = config.get('plot', 'path')
     fname = config.get('plot', 'archive')
-    box = json.loads(config.get('plot', 'box'))
-    place = config.get('plot', 'place')
+    box = json.loads(config.get('place', 'box'))
+    place = config.get('place', 'name')
 
     tweets = parse_archive(os.path.join(path, fname))
 

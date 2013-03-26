@@ -3,6 +3,25 @@ inferhotspot
 
 Infer information about local hotspots.
 
+Plot examples
+-------------
+
+The examples below were created using a collection of 69,150 tweets
+within Denton County from *Tue Feb 12* to *Mon Mar 18*. The data was
+collected using [bwbaugh/twitter-corpus][].
+
+### Map
+
+![map][]
+
+### Heat map
+
+![heat map][]
+
+### Time
+
+![time][]
+
 Installation
 ------------
 
@@ -52,25 +71,6 @@ If the data hasn't been preprocessed to include only those tweets that
 are geocded with using a coordinates-point---and that point falls within
 the bounding box---then you will need to use the `filter.py` script to
 preprocess your data first.
-
-Plot examples
--------------
-
-The examples below were created using a collection of 69,150 tweets
-within Denton County from *Tue Feb 12* to *Mon Mar 18*. The data was
-collected using [bwbaugh/twitter-corpus][].
-
-### Map
-
-![map][]
-
-### Heat map
-
-![heat map][]
-
-### Time
-
-![time][]
 
   [bwbaugh/twitter-corpus]: https://github.com/bwbaugh/twitter-corpus
   [map]: http://s23.postimg.org/9j63tpl7v/map.png

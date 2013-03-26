@@ -59,7 +59,7 @@ def plot_map(tweets):
 
     figure = plt.figure('map')
     ax = figure.add_subplot(1, 1, 1)
-    scatter = axes.scatter(longitude, latitude)
+    scatter = ax.scatter(longitude, latitude, s=10, alpha=0.25)
     plt.show()
 
 

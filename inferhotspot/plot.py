@@ -8,6 +8,7 @@ import os
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from config import get_config
 
@@ -95,8 +96,10 @@ def plot_map(tweets):
                          alpha=0.5,
                          lw=0.5)
 
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad='3%')
     colorbar = figure.colorbar(scatter,
-                               ax=ax,
+                               cax=cax,
                                cmap=plt.cm.rainbow,
                                ticks=range(24))
     colorbar.solids.set_edgecolor("face")

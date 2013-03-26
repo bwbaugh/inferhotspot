@@ -58,33 +58,36 @@ def extract_data(tweets):
         yield longitude, latitude, created_at
 
 
-def plot_map(tweets):
+def make_map(longitude, latitude, time, box, place):
     """Plot geocoded tweets on a map.
 
     Use matplotlib to produce a scatter plot of the longitude and
     latitude data from a collection of tweets.
 
     Args:
-        tweets: Iterable of tweets.
-    """
-    data = list(extract_data(tweets))
-    longitude, latitude, time = zip(*data)
-    time = [(x.hour + (x.minute / 60)) for x in time]
+        longitude: List of longitude float values of length *N*.
+        latitude: List of latitude float values of length *N*.
+        time: List of time of day float values length *N*.
+        box = A pair of longitude and latitude pairs, with the southwest
+            corner of the bounding box coming first.
+        place = String for the place name of the bounding `box`.
 
+    Returns:
+        Figure object used to create the map scatter plot.
+    """
     figure = plt.figure('map')
     figure.set_size_inches(12, 9, forward=True)
     figure.set_dpi(100)
 
     ax = figure.add_subplot(1, 1, 1)
-    ax.set_title('Geocoded Tweets in Denton County')
+    ax.set_title('Geocoded Tweets in {0}'.format(place))
     ax.set_xlabel('Longitude')
     ax.set_ylabel('Latitude')
     ax.grid(True)
 
-    denton_county = [-97.399786, 32.989759, -96.834612, 33.413174]
-    rect = Rectangle(xy=(denton_county[0], denton_county[1]),
-                     width=denton_county[2] - denton_county[0],
-                     height=denton_county[3] - denton_county[1],
+    rect = Rectangle(xy=(box[0], box[1]),
+                     width=box[2] - box[0],
+                     height=box[3] - box[1],
                      facecolor='none')
     ax.add_patch(rect)
 
@@ -110,11 +113,31 @@ def plot_map(tweets):
 
     x_padding = (max(longitude) - min(longitude)) * 0.1
     y_padding = (max(latitude) - min(latitude)) * 0.1
-    ax.set_xbound(denton_county[0] - x_padding, denton_county[2] + x_padding)
-    ax.set_ybound(denton_county[1] - y_padding, denton_county[3] + y_padding)
+    ax.set_xbound(box[0] - x_padding, box[2] + x_padding)
+    ax.set_ybound(box[1] - y_padding, box[3] + y_padding)
     ax.set_aspect('equal')
 
     figure.tight_layout(rect=(0.05, 0.05, 0.95, 0.95))
+
+    return figure
+
+
+def make_plots(tweets, box, place):
+    """Make plots from the extracted tweet data.
+
+    Args:
+        tweets: Iterable of tweets already filtered and within the
+            bounding box.
+        box = A pair of longitude and latitude pairs, with the southwest
+            corner of the bounding box coming first.
+        place = String for the place name of the bounding `box`.
+    """
+    data = list(extract_data(tweets))
+    longitude, latitude, time = zip(*data)
+    time = [(x.hour + (x.minute / 60)) for x in time]
+
+    map_figure = make_map(longitude, latitude, time, box, place)
+
     plt.show()
 
 
@@ -122,5 +145,9 @@ if __name__ == '__main__':
     config = get_config()
     path = config.get('plot', 'path')
     fname = config.get('plot', 'archive')
+    box = json.loads(config.get('plot', 'box'))
+    place = config.get('plot', 'place')
+
     tweets = parse_archive(os.path.join(path, fname))
-    plot_map(tweets)
+
+    make_plots(tweets, box, place)

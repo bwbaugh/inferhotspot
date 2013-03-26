@@ -20,6 +20,8 @@ def create_default_config():
     config.add_section('plot')
     config.set('plot', 'path', 'PATH/TO/TWEET/ARCHIVE')
     config.set('plot', 'archive', 'tweet-loc_denton-filtered.json.bz2')
+    config.set('plot', 'box', '[-97.399786, 32.989759, -96.834612, 33.413174]')
+    config.set('plot', 'place', 'Denton County')
 
     return config
 

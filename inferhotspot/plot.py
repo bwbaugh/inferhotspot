@@ -114,6 +114,7 @@ def plot_map(tweets):
     ax.set_ybound(denton_county[1] - y_padding, denton_county[3] + y_padding)
     ax.set_aspect('equal')
 
+    figure.tight_layout(rect=(0.05, 0.05, 0.95, 0.95))
     plt.show()
 
 

@@ -28,8 +28,8 @@ def parse_archive(path):
             yield tweet
 
 
-def extract_points(tweets):
-    """Extract the longitude and latitude data from tweets.
+def extract_data(tweets):
+    """Extract data to plot from tweets.
 
     Args:
         tweets: An iterable containing JSON decoded tweets.
@@ -54,8 +54,8 @@ def plot_map(tweets):
     Args:
         tweets: Iterable of tweets.
     """
-    points = list(extract_points(tweets))
-    longitude, latitude = zip(*points)
+    data = list(extract_data(tweets))
+    longitude, latitude, time = zip(*data)
 
     figure = plt.figure('map')
     ax = figure.add_subplot(1, 1, 1)

@@ -9,3 +9,6 @@ dist/
 # Unit test / coverage reports
 .coverage
 cover/
+
+# Project created files
+inferhotspot.ini

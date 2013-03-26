@@ -94,6 +94,7 @@ def plot_map(tweets):
     colorbar.set_alpha(1)
     colorbar.draw_all()
 
+    figure.tight_layout()
     plt.show()
 
 

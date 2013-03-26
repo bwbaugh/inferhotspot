@@ -71,6 +71,9 @@ def plot_map(tweets):
     time = [(x.hour + (x.minute / 60)) for x in time]
 
     figure = plt.figure('map')
+    figure.set_size_inches(12, 9, forward=True)
+    figure.set_dpi(100)
+
     ax = figure.add_subplot(1, 1, 1)
     ax.set_title('Geocoded Tweets in Denton County')
     ax.set_xlabel('Longitude')
@@ -102,7 +105,6 @@ def plot_map(tweets):
     colorbar.set_alpha(1)
     colorbar.draw_all()
 
-    figure.tight_layout()
     plt.show()
 
 

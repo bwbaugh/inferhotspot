@@ -25,19 +25,52 @@ collected using [bwbaugh/twitter-corpus][].
 Usage
 -----
 
-Run using the command: `python -m inferhotspot.plot`
+### Configuration file
 
-The first time you run the script it will create a configuration file
-named `inferhotspot.ini`, and you will be asked to edit it. There you
-will need to indicate the path and filename of the bz2-archive that
-contains the already filtered geocoded tweets. Once updated, run the
-command again to generate the plots, which will also display an
-interactive plot and saves each figure to the current working directory.
+The first time you run any script it will create a configuration file
+named `inferhotspot.ini`, and you will be asked to edit it.
+
+### Filtering the tweets
+
+Because of the way Twitter matches location bounding boxes, we must
+first filter the tweets as part of a preprocessing step in order to make
+sure every tweet has a geocoded-point and is within our defined bounding
+box.
+
+Run using the command: `python -m inferhotspot.filter`
+
+Configuration file settings:
+
+- Section: `[filter]`
+    - `process_directory`: The directory containing bz2-archive files.
+      Each line of the uncompressed file must be a JSON encoded tweet.
+    - `output`: The filename of the uncompressed file to save the
+      combined tweets. This file will be saved to the current working
+      directory.
+- Section: `[place]`
+    - `box`: JSON encoded flat-list containing a pair of longitude and
+      latitude pairs, with the southwest corner of the bounding box
+      coming first.
+
+### Making the plots
+
+Run using the command: `python -m inferhotspot.plot`
 
 If the data hasn't been preprocessed to include only those tweets that
 are geocded with using a coordinates-point---and that point falls within
-the bounding box---then you will need to use the `filter.py` script to
-preprocess your data first.
+the bounding box---then you will first need to use the `filter.py`
+script to preprocess your data.
+
+- Section: `[place]`
+    - `box`: JSON encoded flat-list containing a pair of longitude and
+      latitude pairs, with the southwest corner of the bounding box
+      coming first.
+    - `name`: The place name of the bounding `box`.
+- Section: `[plot]`
+    - `path`: The directory containing bz2-archive file of filtered
+      tweets.
+    - `archive`: The filename of the bz2-archive of filtered tweets.
+      Each line of the uncompressed file must be a JSON encoded tweet.
 
 Installation
 ------------

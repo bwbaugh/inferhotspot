@@ -7,6 +7,7 @@ import json
 import os
 
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 
 from config import get_config
 
@@ -75,6 +76,13 @@ def plot_map(tweets):
     ax.set_xlabel('Longitude')
     ax.set_ylabel('Latitude')
     ax.grid(True)
+
+    denton_county = [-97.399786, 32.989759, -96.834612, 33.413174]
+    rect = Rectangle(xy=(denton_county[0], denton_county[1]),
+                     width=denton_county[2] - denton_county[0],
+                     height=denton_county[3] - denton_county[1],
+                     facecolor='none')
+    ax.add_patch(rect)
 
     scatter = ax.scatter(x=longitude,
                          y=latitude,

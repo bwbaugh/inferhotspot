@@ -77,7 +77,7 @@ def plot_map(tweets):
                          c=time,
                          cmap=plt.cm.rainbow,
                          s=10,
-                         alpha=0.25)
+                         alpha=0.5)
 
     colorbar = figure.colorbar(scatter,
                                ax=ax,

@@ -244,9 +244,15 @@ def make_plots(tweets, box, place):
     longitude, latitude, time = zip(*data)
     time = [(x.hour + (x.minute / 60)) for x in time]
 
-    map_figure = make_map(longitude, latitude, time, box, place)
-    heatmap_figure = make_heatmap(longitude, latitude, box, place)
-    time_histogram = make_time(time)
+    figures = []
+    figures.append(make_map(longitude, latitude, time, box, place))
+    figures.append(make_heatmap(longitude, latitude, box, place))
+    figures.append(make_time(time))
+
+    for figure in figures:
+        figure.savefig('{0}.png'.format(figure.get_label()),
+                       bbox_inches='tight',
+                       pad_inches=0.1)
 
     plt.show()
 

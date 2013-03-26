@@ -139,6 +139,7 @@ def make_map(longitude, latitude, time, box, place):
                          lw=0.5)
 
     colorbar = create_colorbar(ax, scatter, cmap=plt.cm.rainbow)
+    colorbar.set_label('Hour (UTC)')
     colorbar.set_ticks(range(24))
 
     ax_coord_bounds(ax, longitude, latitude, box)
@@ -186,6 +187,7 @@ def make_heatmap(longitude, latitude, box, place):
                         cmap=plt.cm.rainbow)
 
     colorbar = create_colorbar(ax, heatmap, cmap=plt.cm.rainbow)
+    colorbar.set_label('Number of Tweets')
 
     ax_coord_bounds(ax, longitude, latitude, box)
 

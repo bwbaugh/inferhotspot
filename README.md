@@ -3,6 +3,23 @@ inferhotspot
 
 Infer information about local hotspots.
 
+Usage
+-----
+
+Run using the command: `python -m inferhotspot.plot`
+
+The first time you run the script it will create a configuration file
+named `inferhotspot.ini`, and you will be asked to edit it. There you
+will need to indicate the path and filename of the bz2-archive that
+contains the already filtered geocoded tweets. Once updated, run the
+command again to generate the plots, which will also display an
+interactive plot and saves each figure to the current working directory.
+
+If the data hasn't been preprocessed to include only those tweets that
+are geocded with using a coordinates-point---and that point falls within
+the bounding box---then you will need to use the `filter.py` script to
+preprocess your data first.
+
 Plot examples
 -------------
 

@@ -58,6 +58,28 @@ def extract_data(tweets):
         yield longitude, latitude, created_at
 
 
+def create_colorbar(ax, mappable, cmap=None):
+    """Create a colorbar object.
+
+    Args:
+        ax: Axes object to modify.
+        mappable: The object to which the colorbar applies.
+        cmap: The colormap to be used.
+
+    Returns:
+        The colorbar object created.
+    """
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad='3%')
+    colorbar = ax.figure.colorbar(mappable, cax=cax, cmap=cmap)
+    colorbar.solids.set_edgecolor('face')
+    # Make colorbar solid.
+    # See: http://stackoverflow.com/a/4480124/1988505
+    colorbar.set_alpha(1)
+    colorbar.draw_all()
+    return colorbar
+
+
 def ax_coord_bounds(ax, longitude, latitude, box):
     """Set the x-axis and y-axis bounds based on longitude and latitude.
 
@@ -116,17 +138,8 @@ def make_map(longitude, latitude, time, box, place):
                          alpha=0.5,
                          lw=0.5)
 
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='5%', pad='3%')
-    colorbar = figure.colorbar(scatter,
-                               cax=cax,
-                               cmap=plt.cm.rainbow,
-                               ticks=range(24))
-    colorbar.solids.set_edgecolor("face")
-    # Make colorbar solid.
-    # See: http://stackoverflow.com/a/4480124/1988505
-    colorbar.set_alpha(1)
-    colorbar.draw_all()
+    colorbar = create_colorbar(ax, scatter, cmap=plt.cm.rainbow)
+    colorbar.set_ticks(range(24))
 
     ax_coord_bounds(ax, longitude, latitude, box)
 
@@ -172,16 +185,7 @@ def make_heatmap(longitude, latitude, box, place):
                         mincnt=1,
                         cmap=plt.cm.rainbow)
 
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='5%', pad='3%')
-    colorbar = figure.colorbar(heatmap,
-                               cax=cax,
-                               cmap=plt.cm.rainbow)
-    colorbar.solids.set_edgecolor("face")
-    # Make colorbar solid.
-    # See: http://stackoverflow.com/a/4480124/1988505
-    colorbar.set_alpha(1)
-    colorbar.draw_all()
+    colorbar = create_colorbar(ax, heatmap, cmap=plt.cm.rainbow)
 
     ax_coord_bounds(ax, longitude, latitude, box)
 

@@ -90,7 +90,7 @@ def combine_filter(directory, output, filters, msginterval=10000):
     count, total, errors = 0, 0, 0
     with open(output, mode='w') as out:
         pathname = os.path.join(directory, '*.bz2')
-        for fname in glob.iglob(pathname):
+        for fname in sorted(glob.glob(pathname)):
             with bz2.BZ2File(fname) as archive:
                 print 'Processing:', fname
                 for line in archive:

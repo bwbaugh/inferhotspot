@@ -293,21 +293,27 @@ def make_plots(tweets, box, place):
             corner of the bounding box coming first.
         place = String for the place name of the bounding `box`.
     """
+    print 'Extracting data ...',
     data = list(extract_data(tweets))
+    print 'DONE'
     longitude, latitude, time, user_id = zip(*data)
     time = [(x.hour + (x.minute / 60)) for x in time]
 
+    print 'Making figures ...',
     figures = []
     figures.append(make_map(longitude, latitude, time, box, place))
     figures.append(
         make_user_map(longitude, latitude, time, user_id, box, place))
     figures.append(make_heatmap(longitude, latitude, box, place))
     figures.append(make_time(time))
+    print 'DONE'
 
+    print 'Saving figures ...',
     for figure in figures:
         figure.savefig('{0}.png'.format(figure.get_label()),
                        bbox_inches='tight',
                        pad_inches=0.1)
+    print 'DONE'
 
     plt.show()
 

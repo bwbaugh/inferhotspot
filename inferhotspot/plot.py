@@ -207,6 +207,14 @@ def make_user_map(longitude, latitude, time, user_id, box, place):
                         markersize=2)
         line.set_alpha(0.2)
 
+    # Display number of unique users.
+    x, y = box[0], box[3]  # top-left of box.
+    y += (box[3] - box[1]) * .01  # add a little margin
+    ax.text(x,
+            y,
+            'Unique users: {0}'.format(len(users)),
+            bbox=dict(facecolor='gray', alpha=0.25))
+
     ax_coord_bounds(ax, longitude, latitude, box)
 
     figure.tight_layout(rect=(0.05, 0.05, 0.95, 0.95))

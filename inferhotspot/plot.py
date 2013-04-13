@@ -200,8 +200,12 @@ def make_user_map(longitude, latitude, time, user_id, box, place):
 
     for user in users:
         x, y = zip(*users[user])
-        line, = ax.plot(x, y)  # comma for unpacking.
-        line.set_alpha(0.5)
+        line, = ax.plot(x,
+                        y,
+                        linewidth=1,
+                        marker='o',
+                        markersize=2)
+        line.set_alpha(0.2)
 
     ax_coord_bounds(ax, longitude, latitude, box)
 

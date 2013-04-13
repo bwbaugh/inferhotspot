@@ -166,14 +166,15 @@ def make_map(longitude, latitude, time, box, place):
     return figure
 
 
-def make_user_map(longitude, latitude, time, user_id, box, place):
+def make_user_map(longitude, latitude, users, box, place):
     """Plot lines for each user using geocoded tweets.
 
     Args:
         longitude: List of longitude float values of length *N*.
         latitude: List of latitude float values of length *N*.
-        time: List of time of day float values length *N*.
-        user_id: List of the user-ID associated with each tweet.
+        users: Dictionary with keys being users and values being a list
+            containing the ordered list of longitude-latitude points
+            that are associated with that user.
         box = A pair of longitude and latitude pairs, with the southwest
             corner of the bounding box coming first.
         place = String for the place name of the bounding `box`.
@@ -192,11 +193,6 @@ def make_user_map(longitude, latitude, time, user_id, box, place):
     ax.grid(True)
 
     create_box(ax, box)
-
-    # Combine all points from same user.
-    users = collections.defaultdict(list)
-    for ulong, ulat, user in itertools.izip(longitude, latitude, user_id):
-        users[user].append((ulong, ulat))
 
     for user in users:
         x, y = zip(*users[user])
@@ -304,14 +300,20 @@ def make_plots(tweets, box, place):
     print 'Extracting data ...',
     data = list(extract_data(tweets))
     print 'DONE'
+
+    print 'Processing data ...',
     longitude, latitude, time, user_id = zip(*data)
     time = [(x.hour + (x.minute / 60)) for x in time]
+    # Combine all points from same user.
+    users = collections.defaultdict(list)
+    for ulong, ulat, user in itertools.izip(longitude, latitude, user_id):
+        users[user].append((ulong, ulat))
+    print 'DONE'
 
     print 'Making figures ...',
     figures = []
     figures.append(make_map(longitude, latitude, time, box, place))
-    figures.append(
-        make_user_map(longitude, latitude, time, user_id, box, place))
+    figures.append(make_user_map(longitude, latitude, users, box, place))
     figures.append(make_heatmap(longitude, latitude, box, place))
     figures.append(make_time(time))
     print 'DONE'

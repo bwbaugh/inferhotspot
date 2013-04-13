@@ -218,6 +218,36 @@ def make_user_map(longitude, latitude, users, box, place):
     return figure
 
 
+def make_user_checkins(users):
+    """Plot a histogram of check-ins per user.
+
+    Args:
+        users: Dictionary with keys being users and values being a list
+            containing the ordered list of longitude-latitude points
+            that are associated with that user.
+
+    Returns:
+        Figure object used for the histogram.
+    """
+    figure = plt.figure('user-checkins')
+    figure.set_dpi(100)
+
+    ax = figure.add_subplot(1, 1, 1)
+    ax.set_title('Check-ins per User')
+    ax.set_xlabel('Number of check-ins')
+    ax.set_ylabel('Number of users')
+    ax.set_yscale('log')
+    ax.grid(True)
+
+    user_checkins = []
+    for user in users:
+        user_checkins.append(len(users[user]))
+
+    n, bins, patches = ax.hist(user_checkins, bins=100)
+
+    return figure
+
+
 def make_heatmap(longitude, latitude, box, place):
     """Plot geocoded tweets on a heat map.
 
@@ -314,6 +344,7 @@ def make_plots(tweets, box, place):
     figures = []
     figures.append(make_map(longitude, latitude, time, box, place))
     figures.append(make_user_map(longitude, latitude, users, box, place))
+    figures.append(make_user_checkins(users))
     figures.append(make_heatmap(longitude, latitude, box, place))
     figures.append(make_time(time))
     print 'DONE'

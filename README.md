@@ -14,6 +14,10 @@ collected using [bwbaugh/twitter-corpus][].
 
 ![map][]
 
+### User map
+
+![user map][]
+
 ### Heat map
 
 ![heat map][]
@@ -107,5 +111,6 @@ To uninstall:
 
   [bwbaugh/twitter-corpus]: https://github.com/bwbaugh/twitter-corpus
   [map]: http://s17.postimg.org/nt3blvklb/map.png
+  [user map]: http://s23.postimg.org/m7s1dogcr/user_map.png
   [heat map]: http://s4.postimg.org/okjzk3kbx/heatmap.png
   [time]: http://s14.postimg.org/qvebk9s4h/time.png

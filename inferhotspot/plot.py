@@ -2,7 +2,9 @@
 """Visually display geocded tweets."""
 from __future__ import division
 import bz2
+import collections
 import dateutil
+import itertools
 import json
 import os
 
@@ -40,8 +42,9 @@ def extract_data(tweets):
         tweets: An iterable containing JSON decoded tweets.
 
     Yields:
-        A tuple of the longitude and latitude coordinates, and the
-        created-at `datetime.datetime` object parsed from the tweet.
+        A tuple of the longitude and latitude coordinates, the
+        created-at `datetime.datetime` object parsed from the tweet, and
+        the tweet's user ID as a number.
 
         For example, if a tweet contained:
             tweet[created_at] = 'Tue Feb 12 06:33:37 +0000 2013'
@@ -56,7 +59,9 @@ def extract_data(tweets):
         # Created-at time
         created_at = tweet['created_at']
         created_at = dateutil.parser.parse(created_at)
-        yield longitude, latitude, created_at
+        # User ID
+        user_id = tweet['user']['id']
+        yield longitude, latitude, created_at, user_id
 
 
 def create_box(ax, box):
@@ -161,6 +166,50 @@ def make_map(longitude, latitude, time, box, place):
     return figure
 
 
+def make_user_map(longitude, latitude, time, user_id, box, place):
+    """Plot lines for each user using geocoded tweets.
+
+    Args:
+        longitude: List of longitude float values of length *N*.
+        latitude: List of latitude float values of length *N*.
+        time: List of time of day float values length *N*.
+        user_id: List of the user-ID associated with each tweet.
+        box = A pair of longitude and latitude pairs, with the southwest
+            corner of the bounding box coming first.
+        place = String for the place name of the bounding `box`.
+
+    Returns:
+        Figure object used to create the plot.
+    """
+    figure = plt.figure('user-map')
+    figure.set_size_inches(12, 9, forward=True)
+    figure.set_dpi(100)
+
+    ax = figure.add_subplot(1, 1, 1)
+    ax.set_title("Users' Geocoded Tweets in {0}".format(place))
+    ax.set_xlabel('Longitude')
+    ax.set_ylabel('Latitude')
+    ax.grid(True)
+
+    create_box(ax, box)
+
+    # Combine all points from same user.
+    users = collections.defaultdict(list)
+    for ulong, ulat, user in itertools.izip(longitude, latitude, user_id):
+        users[user].append((ulong, ulat))
+
+    for user in users:
+        x, y = zip(*users[user])
+        line, = ax.plot(x, y)  # comma for unpacking.
+        line.set_alpha(0.5)
+
+    ax_coord_bounds(ax, longitude, latitude, box)
+
+    figure.tight_layout(rect=(0.05, 0.05, 0.95, 0.95))
+
+    return figure
+
+
 def make_heatmap(longitude, latitude, box, place):
     """Plot geocoded tweets on a heat map.
 
@@ -241,11 +290,13 @@ def make_plots(tweets, box, place):
         place = String for the place name of the bounding `box`.
     """
     data = list(extract_data(tweets))
-    longitude, latitude, time = zip(*data)
+    longitude, latitude, time, user_id = zip(*data)
     time = [(x.hour + (x.minute / 60)) for x in time]
 
     figures = []
     figures.append(make_map(longitude, latitude, time, box, place))
+    figures.append(
+        make_user_map(longitude, latitude, time, user_id, box, place))
     figures.append(make_heatmap(longitude, latitude, box, place))
     figures.append(make_time(time))
 

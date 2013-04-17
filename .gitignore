@@ -12,3 +12,5 @@ cover/
 
 # Project created files
 inferhotspot.ini
+*.png
+*.mp4

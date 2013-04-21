@@ -2,11 +2,12 @@
 
 {% block content %}
 <div id="map-canvas"></div>
-<form action="interaction/blocks" method="get">
+
+<form method="get">
   <label for="latitude">Latitude:</label>
-  <input type="text" id="latitude" name="latitude" value="33.214563">
+  <input type="text" id="latitude" name="latitude" value="{{ latitude }}">
   <label for="longitude">Longitude:</label>
-  <input type="text" id="longitude" name="longitude" value="-97.132874">
+  <input type="text" id="longitude" name="longitude" value="{{ longitude }}">
   <input type="submit" value="Find Interactions">
 </form>
 
@@ -18,7 +19,7 @@
   function initialize() {
     var mapOptions = {
       zoom: 10,
-      center: new google.maps.LatLng(33.214563,-97.132874),
+      center: new google.maps.LatLng(33.214563, -97.132874),
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
@@ -26,7 +27,7 @@
         mapOptions);
 
     marker = new google.maps.Marker({
-      position: new google.maps.LatLng(33.214563,-97.132874),
+      position: new google.maps.LatLng({{ latitude }}, {{ longitude }}),
       map: map,
       draggable: true,
     });
@@ -35,6 +36,21 @@
       document.getElementById("latitude").value=event.latLng.lat();
       document.getElementById("longitude").value=event.latLng.lng();
     });
+
+    {% for census_id, shape, weight in blocks %}
+      new google.maps.Polygon({
+        paths: [
+          {% for b_longitude, b_latitude in shape.geoms[0].exterior.coords %}
+          new google.maps.LatLng({{ b_latitude }}, {{ b_longitude }}),{% end %}
+        ],
+        map: map,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 3,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35
+      });
+      {% end %}
   }
 
   google.maps.event.addDomListener(window, 'load', initialize);

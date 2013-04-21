@@ -3,6 +3,7 @@
 import os
 import subprocess
 
+import shapely
 import tornado.ioloop
 import tornado.web
 import tornado.httpserver
@@ -30,9 +31,51 @@ class MainHandler(tornado.web.RequestHandler):
                     git_version=self.git_version)
 
 
+class InteractionHandler(MainHandler):
+    """Handles the census block interaction query."""
+
+    def get(self):
+        """Renders the census block interactions result page.
+
+        GET Parameters:
+            latitude: Float of the latitude coordinate.
+            longitude: Float of the longitude coordinate.
+        """
+        latitude = float(self.get_argument('latitude'))
+        longitude = float(self.get_argument('longitude'))
+
+        point = shapely.geometry.Point(longitude, latitude)
+        block_id = process.point_to_block(point, self.blocks)
+        interactions = self.interactions[block_id]
+        blocks = self._prepare_blocks(interactions)
+
+        self.render('interaction.html',
+                    latitude=latitude,
+                    longitude=longitude,
+                    blocks=blocks,
+                    git_version=self.git_version)
+
+    def _prepare_blocks(self, interactions):
+        """Use interactions to prepare census blocks to be rendered.
+
+        Args:
+            interactions: Dictionary of blocks with interaction value.
+
+        Returns:
+            List of tuples: (target_block_id, shape, weight).
+        """
+        blocks = []
+        for target_block_id in interactions:
+            shape = self.blocks[target_block_id]
+            weight = interactions[target_block_id]
+            blocks.append((target_block_id, shape, weight))
+        return blocks
+
+
 def start_server(config, blocks, interactions, git_version):
     application = tornado.web.Application(
-        [(r'/', MainHandler)],
+        [(r'/', MainHandler),
+         (r'/interaction/blocks', InteractionHandler)],
         template_path=os.path.join(os.path.dirname(__file__), 'templates'),
         static_path=os.path.join(os.path.dirname(__file__), 'static'),
         gzip=config.getboolean('web', 'gzip'),

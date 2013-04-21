@@ -2,6 +2,7 @@
 """Web interface for displaying hotspot related information."""
 from __future__ import division
 import colorsys
+import copy
 import json
 import logging
 import os
@@ -47,14 +48,25 @@ class InteractionHandler(MainHandler):
         GET Parameters:
             latitude: Float of the latitude coordinate.
             longitude: Float of the longitude coordinate.
+            edges: String, either 'directed' or 'undirected', indicating
+                whether order of interactions matters.
         """
         latitude = float(self.get_argument('latitude'))
         longitude = float(self.get_argument('longitude'))
+        edges = self.get_argument('edges')
+        if edges == 'directed':
+            directed = True
+        elif edges == 'undirected':
+            directed = False
+        else:
+            raise tornado.web.HTTPError(400)  # 400 Bad Request
 
         point = shapely.geometry.Point(longitude, latitude)
         block_id = process.point_to_block(point, self.blocks)
         if block_id in self.interactions:
-            interactions = self.interactions[block_id]
+            interactions = copy.deepcopy(self.interactions[block_id])
+            if not directed:
+                self._add_undirected(block_id, interactions)
             interactions = self._normalized_interaction_counts(interactions)
             blocks = self._prepare_blocks(interactions)
         else:
@@ -64,10 +76,30 @@ class InteractionHandler(MainHandler):
                     box=self.box,
                     latitude=latitude,
                     longitude=longitude,
+                    directed=directed,
                     source_id=block_id,
                     blocks=blocks,
                     color_code=self._color_code,
                     git_version=self.git_version)
+
+    def _add_undirected(self, block_id, interactions):
+        """Add counts for the reverse interaction edges.
+
+        Args:
+            block_id: The source block ID.
+            interactions: Dictionary of the directed interactions for
+                the `block_id`.
+
+        Returns:
+            The `interactions` dictionary updated with reverse counts.
+        """
+        for target_id in self.interactions:
+            if (block_id not in self.interactions[target_id] or
+                    target_id == block_id):
+                continue
+            if target_id not in interactions:
+                interactions[target_id] = 0
+            interactions[target_id] += self.interactions[target_id][block_id]
 
     def _normalized_interaction_counts(self, interactions):
         """Normalize the interaction value to between 0 and 1.

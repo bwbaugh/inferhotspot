@@ -54,6 +54,13 @@
       draggable: true,
     });
 
+    var infowindow = new google.maps.InfoWindow({
+      content: "Click on the map to select a point.<br>" +
+               "We'll show you the hotspots for that area.<br>" +
+               "Zoom in to get a better look!"
+    });
+    infowindow.open(map, marker);
+
     google.maps.event.addListener(map, 'click', function(event){
       marker.setPosition(event.latLng);
       document.getElementById("latitude").value=event.latLng.lat();

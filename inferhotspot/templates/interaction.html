@@ -42,6 +42,7 @@
           new google.maps.LatLng({{ box[1] }}, {{ box[2] }}),
         ],
         map: map,
+        clickable: false,
         strokeColor: '#000000',
         strokeOpacity: 0.5,
         strokeWeight: 3,
@@ -56,6 +57,11 @@
     });
     bounds.extend(source_latlng)
 
+    google.maps.event.addListener(map, 'click', function(event){
+      marker.setPosition(event.latLng);
+      document.getElementById("latitude").value=event.latLng.lat();
+      document.getElementById("longitude").value=event.latLng.lng();
+    });
     google.maps.event.addListener(marker, 'dragend', function(event){
       document.getElementById("latitude").value=event.latLng.lat();
       document.getElementById("longitude").value=event.latLng.lng();

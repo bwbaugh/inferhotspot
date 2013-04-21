@@ -17,7 +17,14 @@
   var marker;
 
   function initialize() {
+    {% if not blocks %}
+    var sw = new google.maps.LatLng({{ box[1] }}, {{ box[0] }});
+    var ne = new google.maps.LatLng({{ box[3] }}, {{ box[2] }});
+    var bounds = new google.maps.LatLngBounds(sw, ne);
+    alert('No interactions found.')
+    {% else %}
     var bounds = new google.maps.LatLngBounds();
+    {% end %}
 
     var mapOptions = {
       mapTypeId: google.maps.MapTypeId.ROADMAP

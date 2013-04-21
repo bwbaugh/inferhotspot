@@ -50,9 +50,12 @@ class InteractionHandler(MainHandler):
 
         point = shapely.geometry.Point(longitude, latitude)
         block_id = process.point_to_block(point, self.blocks)
-        interactions = self.interactions[block_id]
-        interactions = self._normalized_interaction_counts(interactions)
-        blocks = self._prepare_blocks(interactions)
+        if block_id in self.interactions:
+            interactions = self.interactions[block_id]
+            interactions = self._normalized_interaction_counts(interactions)
+            blocks = self._prepare_blocks(interactions)
+        else:
+            blocks = []
 
         self.render('interaction.html',
                     box=self.box,

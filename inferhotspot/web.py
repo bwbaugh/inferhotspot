@@ -16,6 +16,8 @@ class MainHandler(tornado.web.RequestHandler):
 
     def initialize(self):
         self.git_version = self.application.settings.get('git_version')
+        self.blocks = self.application.settings.get('blocks')
+        self.interactions = self.application.settings.get('interactions')
 
     def head(self, *args):
         """Handle HEAD requests by sending an identical GET response."""
@@ -26,13 +28,14 @@ class MainHandler(tornado.web.RequestHandler):
         self.render('index.html', git_version=self.git_version)
 
 
-def start_server(config, interactions, git_version):
+def start_server(config, blocks, interactions, git_version):
     application = tornado.web.Application(
         [(r'/', MainHandler)],
         template_path=os.path.join(os.path.dirname(__file__), 'templates'),
         static_path=os.path.join(os.path.dirname(__file__), 'static'),
         gzip=config.getboolean('web', 'gzip'),
         debug=config.getboolean('web', 'debug'),
+        blocks=blocks,
         interactions=interactions,
         git_version=git_version)
     http_server = tornado.httpserver.HTTPServer(application, xheaders=True)
@@ -72,10 +75,16 @@ if __name__ == '__main__':
     else:
         print 'Could not detect current Git commit.'
 
+    print 'Extracting census blocks ...',
+    census_path = config.get('census', 'path')
+    census_blocks = config.get('census', 'blocks')
+    blocks = process.extract_blocks(os.path.join(census_path, census_blocks))
+    print 'DONE'
+
     print 'Loading census block interactions ...',
     with open('census-block-interactions.tsv') as f:
         interactions = process.load_interactions(f)
     print 'DONE'
 
     print 'Starting web server (port {0}).'.format(config.getint('web', 'port'))
-    start_server(config, interactions, (git_version, git_commit))
+    start_server(config, blocks, interactions, (git_version, git_commit))

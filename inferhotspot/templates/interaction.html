@@ -9,9 +9,9 @@
   <label for="longitude">Longitude:</label>
   <input type="text" id="longitude" name="longitude" value="{{ longitude }}">
   <label for="directed">Directed:</label>
-  <input type="radio" name="edges" id="directed" value="directed"{% if directed %} checked{% end %}>
+  <input type="radio" name="edges" id="directed" value="directed" onclick="submit()"{% if directed %} checked{% end %}>
   <label for="undirected">Undirected:</label>
-  <input type="radio" name="edges" id="undirected" value="undirected"{% if not directed %} checked{% end %}>
+  <input type="radio" name="edges" id="undirected" value="undirected" onclick="submit()"{% if not directed %} checked{% end %}>
   <input type="submit" value="Find Interactions">
 </form>
 

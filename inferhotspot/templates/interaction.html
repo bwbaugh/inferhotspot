@@ -41,6 +41,21 @@
     map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
 
+    // Box
+    new google.maps.Polygon({
+        paths: [
+          new google.maps.LatLng({{ box[1] }}, {{ box[0] }}),
+          new google.maps.LatLng({{ box[3] }}, {{ box[0] }}),
+          new google.maps.LatLng({{ box[3] }}, {{ box[2] }}),
+          new google.maps.LatLng({{ box[1] }}, {{ box[2] }}),
+        ],
+        map: map,
+        strokeColor: '#000000',
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillOpacity: 0,
+      });
+
     marker = new google.maps.Marker({
       position: new google.maps.LatLng({{ latitude }}, {{ longitude }}),
       map: map,

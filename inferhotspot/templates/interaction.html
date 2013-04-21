@@ -17,9 +17,7 @@
   var marker;
 
   function initialize() {
-    var sw = new google.maps.LatLng({{ box[1] }}, {{ box[0] }});
-    var ne = new google.maps.LatLng({{ box[3] }}, {{ box[2] }});
-    var bounds = new google.maps.LatLngBounds(sw, ne);
+    var bounds = new google.maps.LatLngBounds();
 
     var mapOptions = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -27,7 +25,6 @@
 
     map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
-    map.fitBounds(bounds)
 
     // Box
     new google.maps.Polygon({
@@ -44,11 +41,13 @@
         fillOpacity: 0,
       });
 
+    var source_latlng = new google.maps.LatLng({{ latitude }}, {{ longitude }})
     marker = new google.maps.Marker({
-      position: new google.maps.LatLng({{ latitude }}, {{ longitude }}),
+      position: source_latlng,
       map: map,
       draggable: true,
     });
+    bounds.extend(source_latlng)
 
     google.maps.event.addListener(marker, 'dragend', function(event){
       document.getElementById("latitude").value=event.latLng.lat();
@@ -56,11 +55,15 @@
     });
 
     {% for census_id, shape, normalized_weight in blocks %}
-      new google.maps.Polygon({
-        paths: [
+      path = [
           {% for b_longitude, b_latitude in shape.geoms[0].exterior.coords %}
           new google.maps.LatLng({{ b_latitude }}, {{ b_longitude }}),{% end %}
-        ],
+        ]
+      for (var i = 0; i < path.length; i++) {
+        bounds.extend(path[i])
+      }
+      new google.maps.Polygon({
+        paths: path,
         map: map,
         strokeColor: '#FF0000',
         strokeOpacity: 0.5,
@@ -69,6 +72,8 @@
         fillOpacity: {{ normalized_weight * 0.75 }}
       });
       {% end %}
+
+      map.fitBounds(bounds)
   }
 
   google.maps.event.addDomListener(window, 'load', initialize);

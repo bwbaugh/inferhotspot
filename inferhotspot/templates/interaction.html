@@ -3,7 +3,7 @@
 {% block content %}
 <div id="map-canvas"></div>
 
-<form method="get">
+<form method="get" name="interaction">
   <label for="latitude">Latitude:</label>
   <input type="text" id="latitude" name="latitude" value="{{ latitude }}">
   <label for="longitude">Longitude:</label>
@@ -61,10 +61,12 @@
       marker.setPosition(event.latLng);
       document.getElementById("latitude").value=event.latLng.lat();
       document.getElementById("longitude").value=event.latLng.lng();
+      document.interaction.submit();
     });
     google.maps.event.addListener(marker, 'dragend', function(event){
       document.getElementById("latitude").value=event.latLng.lat();
       document.getElementById("longitude").value=event.latLng.lng();
+      document.interaction.submit();
     });
 
     {% for census_id, shape, normalized_weight in blocks %}

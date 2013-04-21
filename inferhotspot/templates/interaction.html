@@ -17,9 +17,24 @@
   var marker;
 
   function initialize() {
+    // Compute zoom level.
+    // Source: http://stackoverflow.com/a/6055653/1988505
+    var sw = new google.maps.LatLng({{ box[1] }}, {{ box[0] }});
+    var ne = new google.maps.LatLng({{ box[3] }}, {{ box[2] }});
+    var bounds = new google.maps.LatLngBounds(sw, ne);
+    var pixelWidth = 500;
+    var GLOBE_WIDTH = 256; // a constant in Google's map projection
+    var west = sw.lng();
+    var east = ne.lng();
+    var angle = east - west;
+    if (angle < 0) {
+      angle += 360;
+    }
+    var zoom = Math.round(Math.log(pixelWidth * 360 / angle / GLOBE_WIDTH) / Math.LN2);
+
     var mapOptions = {
-      zoom: 10,
-      center: new google.maps.LatLng(33.214563, -97.132874),
+      zoom: zoom,
+      center: bounds.getCenter(),
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 

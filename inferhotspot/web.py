@@ -1,6 +1,7 @@
 # Copyright (C) 2013 Wesley Baugh
 """Web interface for displaying hotspot related information."""
 from __future__ import division
+import json
 import os
 import subprocess
 
@@ -18,6 +19,7 @@ class MainHandler(tornado.web.RequestHandler):
 
     def initialize(self):
         self.git_version = self.application.settings.get('git_version')
+        self.box = self.application.settings.get('box')
         self.blocks = self.application.settings.get('blocks')
         self.interactions = self.application.settings.get('interactions')
 
@@ -28,6 +30,7 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         """Renders the query input page."""
         self.render('index.html',
+                    box=self.box,
                     blocks=self.blocks,
                     git_version=self.git_version)
 
@@ -52,6 +55,7 @@ class InteractionHandler(MainHandler):
         blocks = self._prepare_blocks(interactions)
 
         self.render('interaction.html',
+                    box=self.box,
                     latitude=latitude,
                     longitude=longitude,
                     blocks=blocks,
@@ -96,6 +100,7 @@ def start_server(config, blocks, interactions, git_version):
         static_path=os.path.join(os.path.dirname(__file__), 'static'),
         gzip=config.getboolean('web', 'gzip'),
         debug=config.getboolean('web', 'debug'),
+        box=json.loads(config.get('place', 'box')),
         blocks=blocks,
         interactions=interactions,
         git_version=git_version)

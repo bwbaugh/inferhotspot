@@ -2,6 +2,8 @@
 
 {% block content %}
 <div id="map-canvas"></div>
+<input type="text" id="latitude" name="latitude" placeholder="33.214563">
+<input type="text" id="longitude" name="longitude" placeholder="-97.132874">
 
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <script>
@@ -25,7 +27,8 @@
     });
 
     google.maps.event.addListener(marker, 'dragend', function(event){
-      alert('Latitude: ' + event.latLng.lat() + '\nLongitude: ' + event.latLng.lng());
+      document.getElementById("latitude").value=event.latLng.lat();
+      document.getElementById("longitude").value=event.latLng.lng();
     });
   }
 

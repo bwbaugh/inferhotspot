@@ -1,10 +1,5 @@
 # Copyright (C) 2013 Wesley Baugh
 """Visually display geocded tweets."""
-from __future__ import division
-import bz2
-import collections
-import dateutil
-import itertools
 import json
 import os
 
@@ -14,54 +9,7 @@ from matplotlib.patches import Rectangle
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from config import get_config
-
-
-def parse_archive(path):
-    """Get tweets from a bz2 archive.
-
-    Args:
-        path: String of the path for the file.
-
-    Yields:
-        Dictionary representing a tweet, decoded from a JSON string.
-    """
-    with bz2.BZ2File(path) as archive:
-        for line in archive:
-            line = line.rstrip()
-            try:
-                tweet = json.loads(line)
-            except ValueError:
-                continue
-            yield tweet
-
-
-def extract_data(tweets):
-    """Extract data to plot from tweets.
-
-    Args:
-        tweets: An iterable containing JSON decoded tweets.
-
-    Yields:
-        A tuple of the longitude and latitude coordinates, the
-        created-at `datetime.datetime` object parsed from the tweet, and
-        the tweet's user ID as a number.
-
-        For example, if a tweet contained:
-            tweet[created_at] = 'Tue Feb 12 06:33:37 +0000 2013'
-        The datetime object yielded would be:
-            datetime.datetime(2013, 2, 12, 6, 33, 37, tzinfo=tzutc())
-    """
-    for tweet in tweets:
-        # Coordinates
-        point = tweet['coordinates']['coordinates']
-        longitude = point[0]
-        latitude = point[1]
-        # Created-at time
-        created_at = tweet['created_at']
-        created_at = dateutil.parser.parse(created_at)
-        # User ID
-        user_id = tweet['user']['id']
-        yield longitude, latitude, created_at, user_id
+import process
 
 
 def create_box(ax, box):
@@ -328,16 +276,11 @@ def make_plots(tweets, box, place):
         place = String for the place name of the bounding `box`.
     """
     print 'Extracting data ...',
-    data = list(extract_data(tweets))
+    data = list(process.extract_data(tweets))
     print 'DONE'
 
     print 'Processing data ...',
-    longitude, latitude, time, user_id = zip(*data)
-    time = [(x.hour + (x.minute / 60)) for x in time]
-    # Combine all points from same user.
-    users = collections.defaultdict(list)
-    for ulong, ulat, user in itertools.izip(longitude, latitude, user_id):
-        users[user].append((ulong, ulat))
+    longitude, latitude, time, users = process.process_data(data)
     print 'DONE'
 
     print 'Making figures ...',
@@ -366,6 +309,6 @@ if __name__ == '__main__':
     box = json.loads(config.get('place', 'box'))
     place = config.get('place', 'name')
 
-    tweets = parse_archive(os.path.join(path, fname))
+    tweets = process.parse_archive(os.path.join(path, fname))
 
     make_plots(tweets, box, place)

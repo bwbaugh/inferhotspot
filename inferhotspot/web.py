@@ -1,6 +1,7 @@
 # Copyright (C) 2013 Wesley Baugh
 """Web interface for displaying hotspot related information."""
 from __future__ import division
+import colorsys
 import json
 import logging
 import os
@@ -65,6 +66,7 @@ class InteractionHandler(MainHandler):
                     longitude=longitude,
                     source_id=block_id,
                     blocks=blocks,
+                    color_code=self._color_code,
                     git_version=self.git_version)
 
     def _normalized_interaction_counts(self, interactions):
@@ -96,6 +98,13 @@ class InteractionHandler(MainHandler):
             weight = interactions[target_block_id]
             blocks.append((target_block_id, shape, weight))
         return blocks
+
+    def _color_code(self, weight):
+        """Converts float [0.0 - 1.0] to HTML color code."""
+        weight = 1 - weight
+        rgb = colorsys.hsv_to_rgb(weight / 2, 1, 0.75)
+        code = '#' + ''.join([hex(int(x * 256))[2:].zfill(2) for x in rgb])
+        return code
 
 
 def start_server(config, blocks, interactions, git_version):

@@ -63,6 +63,7 @@ class InteractionHandler(MainHandler):
                     box=self.box,
                     latitude=latitude,
                     longitude=longitude,
+                    source_id=block_id,
                     blocks=blocks,
                     git_version=self.git_version)
 

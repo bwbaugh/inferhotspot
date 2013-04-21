@@ -80,6 +80,7 @@
       new google.maps.Polygon({
         paths: path,
         map: map,
+        clickable: {% if source_id == census_id %}true{% else %}false{% end %},
         strokeColor: '#FF0000',
         strokeOpacity: 0.5,
         strokeWeight: 3,

@@ -1,5 +1,6 @@
 # Copyright (C) 2013 Wesley Baugh
 """Web interface for displaying hotspot related information."""
+from __future__ import division
 import os
 import subprocess
 
@@ -47,6 +48,7 @@ class InteractionHandler(MainHandler):
         point = shapely.geometry.Point(longitude, latitude)
         block_id = process.point_to_block(point, self.blocks)
         interactions = self.interactions[block_id]
+        interactions = self._normalized_interaction_counts(interactions)
         blocks = self._prepare_blocks(interactions)
 
         self.render('interaction.html',
@@ -54,6 +56,20 @@ class InteractionHandler(MainHandler):
                     longitude=longitude,
                     blocks=blocks,
                     git_version=self.git_version)
+
+    def _normalized_interaction_counts(self, interactions):
+        """Normalize the interaction value to between 0 and 1.
+
+        Args:
+            interactions: Dictionary of blocks with interaction value.
+
+        Returns:
+            Original dictionary with normalized values (0 <= x <= 1).
+        """
+        maximum = max(interactions.values())
+        for block in interactions:
+            interactions[block] /= maximum
+        return interactions
 
     def _prepare_blocks(self, interactions):
         """Use interactions to prepare census blocks to be rendered.

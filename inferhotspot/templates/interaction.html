@@ -37,7 +37,7 @@
       document.getElementById("longitude").value=event.latLng.lng();
     });
 
-    {% for census_id, shape, weight in blocks %}
+    {% for census_id, shape, normalized_weight in blocks %}
       new google.maps.Polygon({
         paths: [
           {% for b_longitude, b_latitude in shape.geoms[0].exterior.coords %}
@@ -45,10 +45,10 @@
         ],
         map: map,
         strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
+        strokeOpacity: 0.5,
         strokeWeight: 3,
         fillColor: '#FF0000',
-        fillOpacity: 0.35
+        fillOpacity: {{ normalized_weight * 0.75 }}
       });
       {% end %}
   }

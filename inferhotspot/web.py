@@ -25,7 +25,9 @@ class MainHandler(tornado.web.RequestHandler):
 
     def get(self):
         """Renders the query input page."""
-        self.render('index.html', git_version=self.git_version)
+        self.render('index.html',
+                    blocks=self.blocks,
+                    git_version=self.git_version)
 
 
 def start_server(config, blocks, interactions, git_version):

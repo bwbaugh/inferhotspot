@@ -6,14 +6,27 @@
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <script>
   var map;
+  var marker;
+
   function initialize() {
     var mapOptions = {
-      zoom: 11,
+      zoom: 10,
       center: new google.maps.LatLng(33.214563,-97.132874),
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
+
     map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
+
+    marker = new google.maps.Marker({
+      position: new google.maps.LatLng(33.214563,-97.132874),
+      map: map,
+      draggable: true,
+    });
+
+    google.maps.event.addListener(marker, 'dragend', function(event){
+      alert('Latitude: ' + event.latLng.lat() + '\nLongitude: ' + event.latLng.lng());
+    });
   }
 
   google.maps.event.addDomListener(window, 'load', initialize);

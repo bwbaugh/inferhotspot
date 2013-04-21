@@ -37,6 +37,7 @@ def create_default_config():
     config.set('web', 'port', '8080')
     config.set('web', 'gzip', 'True')
     config.set('web', 'debug', 'True')
+    config.set('web', 'web_query_log', 'web_log_queries.txt')
 
     return config
 

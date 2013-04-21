@@ -2,7 +2,9 @@
 """Web interface for displaying hotspot related information."""
 from __future__ import division
 import json
+import logging
 import os
+import socket
 import subprocess
 
 import shapely
@@ -136,13 +138,49 @@ def get_git_version():
     return git_version, git_commit
 
 
+def setup_logging(config):
+    if config.getboolean('web', 'debug'):
+        log_level = logging.DEBUG
+    else:
+        log_level = logging.INFO
+
+    logger = logging.getLogger('')  # Root logger.
+    logger.setLevel(log_level)
+
+    console = logging.StreamHandler()
+    console.setLevel(log_level)
+    console_formatter = logging.Formatter(
+        fmt='%(asctime)s|%(levelname)s|%(name)s|%(message)s',
+        datefmt='%m-%d %H:%M:%S')
+    console.setFormatter(console_formatter)
+    logger.addHandler(console)
+
+    web_query_log = config.get('web', 'web_query_log')
+    # Add the system's hostname before the file extension.
+    web_query_log = (web_query_log[:-3] + socket.gethostname() +
+                     web_query_log[-4:])
+
+    file_handler = logging.FileHandler(web_query_log)
+    file_handler.setLevel(log_level)
+    file_formatter = logging.Formatter(
+        fmt='%(asctime)s.%(msecs)d\t%(levelname)s\t%(name)s\t%(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S')
+    file_handler.setFormatter(file_formatter)
+    logger.addHandler(file_handler)
+
+
 if __name__ == '__main__':
     config = get_config()
+
+    setup_logging(config)
+
+    logger = logging.getLogger('ui.web')
+
     git_version, git_commit = get_git_version()
     if git_version:
-        print 'Version: {0} ({1})'.format(git_version, git_commit)
+        logger.info('Version: {0} ({1})'.format(git_version, git_commit))
     else:
-        print 'Could not detect current Git commit.'
+        logger.warning('Could not detect current Git commit.')
 
     print 'Extracting census blocks ...',
     census_path = config.get('census', 'path')
@@ -155,5 +193,6 @@ if __name__ == '__main__':
         interactions = process.load_interactions(f)
     print 'DONE'
 
-    print 'Starting web server (port {0}).'.format(config.getint('web', 'port'))
+    logger.info('Starting web server on port {}'.format(config.getint('web',
+                                                                      'port')))
     start_server(config, blocks, interactions, (git_version, git_commit))

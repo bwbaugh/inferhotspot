@@ -33,6 +33,11 @@ def create_default_config():
     config.set('plot', 'path', 'PATH/TO/TWEET/ARCHIVE')
     config.set('plot', 'archive', 'tweet-loc_denton-filtered.json.bz2')
 
+    config.add_section('web')
+    config.set('web', 'port', '8080')
+    config.set('web', 'gzip', 'True')
+    config.set('web', 'debug', 'True')
+
     return config
 
 

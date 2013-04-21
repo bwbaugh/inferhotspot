@@ -12,5 +12,6 @@ cover/
 
 # Project created files
 inferhotspot.ini
+census-block-interactions.tsv
 *.png
 *.mp4

@@ -275,12 +275,27 @@ def make_plots(tweets, box, place):
             corner of the bounding box coming first.
         place = String for the place name of the bounding `box`.
     """
-    print 'Extracting data ...',
+    print 'Extracting tweets ...',
     data = list(process.extract_data(tweets))
+    print 'DONE'
+
+    print 'Extracting census blocks ...',
+    census_path = config.get('census', 'path')
+    census_blocks = config.get('census', 'blocks')
+    blocks = process.extract_blocks(os.path.join(census_path, census_blocks))
     print 'DONE'
 
     print 'Processing data ...',
     longitude, latitude, time, users = process.process_data(data)
+    print 'DONE'
+
+    print 'Computing census block interactions ...',
+    interactions = process.compute_block_interactions(users, blocks)
+    print 'DONE'
+
+    print 'Saving census block interactions ...',
+    with open('census-block-interactions.tsv', mode='w') as f:
+        process.dump_interactions(interactions, f)
     print 'DONE'
 
     print 'Making figures ...',

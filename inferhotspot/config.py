@@ -25,6 +25,10 @@ def create_default_config():
     config.set('place', 'box', '[-97.399786, 32.989759, -96.834612, 33.413174]')
     config.set('place', 'name', 'Denton County')
 
+    config.add_section('census')
+    config.set('census', 'path', 'PATH/TO/CENSUS/DATA')
+    config.set('census', 'blocks', 'census-blocks.tsv.bz2')
+
     config.add_section('plot')
     config.set('plot', 'path', 'PATH/TO/TWEET/ARCHIVE')
     config.set('plot', 'archive', 'tweet-loc_denton-filtered.json.bz2')

@@ -7,6 +7,8 @@ import dateutil
 import itertools
 import json
 
+import shapely.wkb
+
 
 def parse_archive(path):
     """Get tweets from a bz2 archive.
@@ -76,3 +78,134 @@ def process_data(data):
     for ulong, ulat, user in itertools.izip(longitude, latitude, user_id):
         users[user].append((ulong, ulat))
     return longitude, latitude, time, users
+
+
+def extract_blocks(fname):
+    """Get tweets from a bz2 archive.
+
+    Args:
+        fname: String of the full path the archive.
+
+    Returns:
+        Dictionary of census block geometry objects with census block ID
+        as the key.
+    """
+    blocks = dict()
+    with bz2.BZ2File(fname) as archive:
+        for line in archive:
+            block_id, geometry = line.rstrip().split('\t')
+            geometry = shapely.wkb.loads(geometry.decode('hex'))
+            blocks[block_id] = geometry
+    return blocks
+
+
+def bigrams(iterable):
+    """Return all item bigrams of an iterable.
+
+    Args:
+        iterable: Any iterable object.
+
+    Yields:
+        Tuple containing two elements. For example:
+
+        >>> list(bigrams([1, 2, 3, 4]))
+        [(1, 2), (2, 3), (3, 4)]
+    """
+    prev = None
+    for item in iterable:
+        if prev:
+            yield (prev, item)
+        prev = item
+
+
+def point_to_block(point, blocks):
+    """Find the census block ID that holds the given point.
+
+    Args:
+        point: A shapely.geometry.Point object.
+        blocks: A dictionary of block IDs mapping to the associated
+            shapely geometry object representing the censsu block.
+
+    Returns:
+        The block ID that contains the point, otherwise None.
+    """
+    for block in blocks:
+        if blocks[block].contains(point):
+            return block
+    return None
+
+
+def compute_block_interactions(users, blocks):
+    """Compute census block interactions using Twitter data.
+
+    Args:
+        users:
+        blocks: Dictionary of census block geometry objects with census
+        block ID as the key.
+
+    Returns:
+        Dictionary of block IDs with a dictionary that stores how many
+        times the source block interacted with the target block.
+    """
+    interactions = collections.defaultdict(collections.Counter)
+
+    for index, user in enumerate(users, start=1):
+        cache = dict()
+        for bigram in bigrams(users[user]):
+            source, target = bigram
+            source_long, source_lat = source
+            target_long, target_lat = target
+
+            if source in cache:
+                source = cache[source]
+            else:
+                block = source
+                source = shapely.geometry.Point(source_long, source_lat)
+                source = point_to_block(source, blocks)
+                cache[block] = source
+
+            if target in cache:
+                target = cache[target]
+            else:
+                block = target
+                target = shapely.geometry.Point(target_long, target_lat)
+                target = point_to_block(target, blocks)
+                cache[block] = target
+
+            if source is None or target is None:
+                continue
+
+            interactions[source][target] += 1
+
+    return dict(interactions)
+
+
+def dump_interactions(interactions, fileobj):
+    """Save the census block interactions to a file.
+
+    Args:
+        interactions: Dictionary of block IDs with a dictionary that
+            stores how many times the source block interacted with the
+            target block.
+        fileobj: File object to write the data to.
+    """
+    for source in sorted(interactions):
+        interaction = json.dumps(interactions[source])
+        fileobj.write('\t'.join([str(source), interaction]) + '\n')
+
+
+def load_interactions(fileobj):
+    """Load the census block interactions from a file.
+
+    Args:
+        fileobj: File object to load the data from.
+
+    Returns:
+        Dictionary of block IDs with a dictionary that stores how many
+        times the source block interacted with the target block.
+    """
+    interactions = dict()
+    for line in fileobj:
+        source, interaction = line.rstrip().split('\t')
+        interactions[source] = json.loads(interaction)
+    return interactions
